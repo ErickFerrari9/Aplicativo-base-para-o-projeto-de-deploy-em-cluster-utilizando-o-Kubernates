@@ -1,0 +1,17 @@
+# Usa uma imagem base oficial do PHP com Apache
+FROM php:7.4-apache
+
+# Instala as extensões MySQLi necessárias para o PHP
+RUN docker-php-ext-install mysqli && docker-php-ext-enable mysqli
+
+# Copia os arquivos da aplicação para o diretório de trabalho do Apache
+COPY . /var/www/html/
+
+# Define as permissões para o diretório de trabalho
+RUN chown -R www-data:www-data /var/www/html/
+
+# Expõe a porta 80 (padrão para o Apache)
+EXPOSE 80
+
+# Inicia o servidor Apache (já configurado na imagem base)
+CMD ["apache2-foreground"]

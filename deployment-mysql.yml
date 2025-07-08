@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mysql-deployment
+  labels:
+    app: mysql
+spec:
+  selector:
+    matchLabels:
+      app: mysql
+  template:
+    metadata:
+      labels:
+        app: mysql
+    spec:
+      containers:
+        - name: mysql
+          image: mysql:5.7 # Imagem do MySQL
+          ports:
+            - containerPort: 3306 # Porta padrão do MySQL
+          env:
+            - name: MYSQL_ROOT_PASSWORD # Variável de ambiente para a senha do root
+              valueFrom:
+                secretKeyRef:
+                  name: mysql-secret # Nome do Secret onde a senha está armazenada
+                  key: root_password # Chave dentro do Secret que contém a senha
+            - name: MYSQL_DATABASE # Nome do banco de dados a ser criado
+              value: meubanco
+          volumeMounts:
+            - name: mysql-persistent-storage
+              mountPath: /var/lib/mysql # Onde os dados do MySQL serão armazenados
+      volumes:
+        - name: mysql-persistent-storage
+          persistentVolumeClaim:
+            claimName: mysql-pv-claim # Referência ao PersistentVolumeClaim para persistência de dados
